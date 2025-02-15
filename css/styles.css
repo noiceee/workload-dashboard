@@ -1,29 +1,67 @@
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 :root {
-    --primary-color: #2196F3;
-    --secondary-color: #FF4081;
-    --success-color: #4CAF50;
-    --warning-color: #FFC107;
-    --danger-color: #F44336;
-    --background-color: #F5F7FA;
-    --card-background: #FFFFFF;
-    --text-primary: #333333;
-    --text-secondary: #666666;
+    /* Light Mode Colors */
+    --primary-color: #695CFE;
+    --primary-light: #8B85FF;
+    --primary-dark: #5147CD;
+    --primary-rgb: 105, 92, 254;
+    
+    --body-color: #E4E9F7;
+    --sidebar-color: #FFF;
+    --primary-text-color: #707070;
+    --secondary-text-color: #999;
+    
+    --card-background: #FFF;
+    --toggle-color: #DDD;
+    --search-box-color: #F6F5FF;
+    
+    --success-color: #41B883;
+    --warning-color: #FFBE33;
+    --danger-color: #FF4C61;
+    
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.15);
+    
+    /* Transitions */
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+    
     --animation-duration: 0.3s;
     --sidebar-width: 250px;
     --sidebar-collapsed-width: 60px;
 }
 
+body.dark {
+    --body-color: #18191A;
+    --sidebar-color: #242526;
+    --primary-text-color: #CCC;
+    --secondary-text-color: #999;
+    
+    --card-background: #242526;
+    --toggle-color: #FFF;
+    --search-box-color: #3A3B3C;
+    
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background-color: var(--background-color);
+    background: var(--body-color);
+    color: var(--primary-text-color);
+    font-size: 14px;
+    min-height: 100vh;
     overflow-x: hidden;
+    transition: var(--tran-03);
 }
 
 .app-wrapper {
@@ -66,12 +104,12 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-in {
-    animation: slideIn var(--animation-duration) ease-out;
+    animation: fadeIn 0.3s ease-out forwards;
 }
 
 /* Enhanced card styles */
@@ -274,6 +312,7 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
     padding: 1rem;
+    margin-bottom: 1rem;
 }
 
 .dashboard-card {
@@ -290,11 +329,13 @@ body {
 }
 
 .card-header {
-    display: flex;
-    align-items: center;
     padding: 1rem;
-    background: rgba(33, 150, 243, 0.1);
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    background: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .card-header i {
@@ -611,9 +652,8 @@ body {
 
     .dashboard-grid {
         grid-template-columns: 1fr;
-        gap: 0.75rem;
-        padding: 0;
-        margin-bottom: 1rem;
+        gap: 1rem;
+        padding: 0.75rem;
     }
 
     .users-list, 
@@ -667,6 +707,20 @@ body {
     .task-item {
         margin-bottom: 0.75rem;
     }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .table-container {
+        margin: 0 -0.75rem;
+        border-radius: 0;
+    }
 }
 
 /* Add smooth scrolling */
@@ -683,24 +737,39 @@ html {
 
 /* Add these new chart styles */
 .chart-wrapper {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 1.5rem;
+    background: var(--card-background);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    margin: 20px;
+    height: 300px;
 }
 
 .chart-wrapper h3 {
-    margin-bottom: 1.5rem;
-    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+    color: var(--primary-text-color);
 }
 
-/* Ensure content doesn't get hidden behind mobile nav */
-.dashboard-grid,
-.users-list,
-.task-list,
-.charts-container {
-    margin-bottom: 70px;
+.chart-container {
+    flex: 1;
+    position: relative;
+    min-height: 300px;
+}
+
+/* Specific chart containers */
+.workload-chart {
+    height: 400px;
+}
+
+.distribution-chart {
+    height: 300px;
+    display: flex;
+    align-items: center;
+}
+
+#distributionChart {
+    max-height: 100%;
+    max-width: 100%;
 }
 
 /* Chart Styles */
@@ -711,18 +780,10 @@ html {
     padding: 1rem;
 }
 
-.chart-wrapper {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 1.5rem;
-    height: 400px;
-}
-
 .chart-wrapper h3 {
     margin-bottom: 1.5rem;
-    color: var(--text-primary);
+    color: var(--primary-text-color);
+    font-weight: 600;
 }
 
 /* Mobile Chart Styles */
@@ -733,8 +794,7 @@ html {
     }
 
     .chart-wrapper {
-        height: 300px;
-        padding: 1rem;
+        height: 350px;
     }
 }
 
@@ -773,22 +833,588 @@ html {
 /* Role Badge Styles */
 .role-badge {
     font-size: 0.7rem;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    color: white;
-    background: var(--primary-color);
 }
 
 .role-badge.developer {
-    background: #3498db;
+    background: var(--primary-color);
+    color: white;
 }
 
 .role-badge.designer {
-    background: #e74c3c;
+    background: var(--warning-color);
+    color: #333;
 }
 
 .role-badge.manager {
-    background: #2ecc71;
-} 
+    background: var(--success-color);
+    color: white;
+}
+
+/* Card Styling Improvements */
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Form Controls Enhancement */
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+input, select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #e1e1e1;
+    border-radius: 6px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+    background: white;
+}
+
+/* Button Improvements */
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Table Improvements */
+.table-container {
+    overflow-x: auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+td {
+    padding: 1rem;
+    border-top: 1px solid #e1e1e1;
+}
+
+tr:hover {
+    background: #f8f9fa;
+}
+
+/* Status Badges */
+.badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-text-color);
+    transition: var(--tran-03);
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.2rem; }
+
+/* Dark Mode Text Colors */
+.dark h1, 
+.dark h2, 
+.dark h3, 
+.dark h4, 
+.dark h5, 
+.dark h6 {
+    color: #FFF;
+}
+
+.dark .section-header {
+    color: #FFF;
+}
+
+.dark .card-content {
+    color: var(--primary-text-color);
+}
+
+/* Form Labels */
+.dark .form-group label {
+    color: #CCC;
+}
+
+/* Task and User Cards */
+.dark .task-card,
+.dark .user-card {
+    background: var(--card-background);
+    color: var(--primary-text-color);
+}
+
+.dark .task-card h3,
+.dark .user-card h3 {
+    color: #FFF;
+}
+
+.dark .user-info p,
+.dark .task-info p {
+    color: var(--primary-text-color);
+}
+
+/* Chart Text */
+.dark .chart-wrapper h3 {
+    color: #FFF;
+}
+
+/* Utilization Text */
+.dark .utilization-text {
+    color: var(--primary-text-color);
+}
+
+/* Table Text */
+.dark table th {
+    color: #FFF;
+}
+
+.dark table td {
+    color: var(--primary-text-color);
+}
+
+/* Priority and Status Text */
+.dark .priority-badge.high {
+    background: rgba(255, 76, 97, 0.2);
+}
+
+.dark .priority-badge.medium {
+    background: rgba(255, 190, 51, 0.2);
+}
+
+.dark .priority-badge.low {
+    background: rgba(65, 184, 131, 0.2);
+}
+
+/* Notification Text */
+.dark .notification {
+    background: var(--card-background);
+    color: #FFF;
+}
+
+/* Form Placeholders */
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #666;
+}
+
+/* Select Options */
+.dark select option {
+    background: var(--card-background);
+    color: var(--primary-text-color);
+}
+
+/* Dashboard Cards */
+.dark .dashboard-card {
+    background: var(--card-background);
+}
+
+.dark .dashboard-card h3 {
+    color: #FFF;
+}
+
+.dark .dashboard-card p {
+    color: var(--primary-text-color);
+}
+
+/* Stats and Numbers */
+.dark .stats-number {
+    color: #FFF;
+}
+
+.dark .stats-label {
+    color: var(--primary-text-color);
+}
+
+/* Empty State Messages */
+.dark .empty-state {
+    color: var(--primary-text-color);
+}
+
+/* Button Text */
+.dark .btn-primary {
+    color: #FFF;
+}
+
+.dark .btn-secondary {
+    background: var(--search-box-color);
+    color: var(--primary-text-color);
+}
+
+/* Icons */
+.dark .btn-icon {
+    color: var(--primary-text-color);
+}
+
+.dark .btn-icon:hover {
+    color: #FFF;
+    background: var(--search-box-color);
+}
+
+/* Capacity Meter */
+.dark .capacity-meter {
+    background: var(--search-box-color);
+}
+
+/* Form Focus States */
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+    border-color: var(--primary-color);
+    background: var(--search-box-color);
+}
+
+/* Hover States */
+.dark .task-card:hover,
+.dark .user-card:hover {
+    background: var(--search-box-color);
+}
+
+/* Mobile Adjustments */
+@media screen and (max-width: 768px) {
+    .dark .mobile-nav {
+        background: var(--sidebar-color);
+    }
+    
+    .dark .mobile-nav-item {
+        color: var(--primary-text-color);
+    }
+    
+    .dark .mobile-nav-item.active {
+        color: #FFF;
+        background: var(--search-box-color);
+    }
+}
+
+/* Mode Toggle Styles */
+.mode-toggle {
+    position: fixed;
+    z-index: 1000;
+    right: 20px;
+    top: 20px;
+}
+
+.toggle-switch {
+    width: 60px;
+    height: 30px;
+    position: relative;
+    display: inline-block;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+/* Slider base */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ddd;
+    transition: 0.3s;
+    border-radius: 34px;
+    z-index: 1;
+}
+
+/* Slider button */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+/* Icon Styles - Increased z-index */
+.sun-icon,
+.moon-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    font-size: 14px;
+    transition: 0.3s;
+    pointer-events: none;
+}
+
+.sun-icon {
+    left: 8px;
+    color: #FFB800;
+    opacity: 1;
+}
+
+.moon-icon {
+    right: 8px;
+    color: #695CFE;
+    opacity: 0;
+}
+
+/* Toggle States */
+input:checked ~ .sun-icon {
+    opacity: 0;
+}
+
+input:checked ~ .moon-icon {
+    opacity: 1;
+    color: #FFF;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+    .mode-toggle {
+        top: auto;
+        bottom: 80px;
+        right: 20px;
+    }
+
+    .toggle-switch {
+        width: 45px;
+        height: 45px;
+    }
+
+    .slider {
+        border-radius: 50%;
+        background: var(--card-background);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .slider:before {
+        display: none;
+    }
+
+    .sun-icon,
+    .moon-icon {
+        position: absolute;
+        font-size: 20px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    input:checked + .slider {
+        background: var(--sidebar-color);
+    }
+
+    /* Hover and Active States */
+    .slider:hover {
+        transform: scale(1.1);
+    }
+
+    .slider:active {
+        transform: scale(0.9);
+    }
+
+    /* Transition for the toggle */
+    .toggle-switch {
+        transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+}
+
+/* Update Chart.js text colors */
+.charts-container canvas {
+    color: var(--primary-text-color) !important;
+}
+
+/* Ensure proper text contrast in both modes */
+.dark .chart-wrapper {
+    background: var(--card-background);
+}
+
+.dark .chart-wrapper h3 {
+    color: var(--primary-text-color);
+}
+
+/* Dark mode text colors for recent tasks */
+.dark .recent-tasks {
+    color: var(--primary-text-color);
+}
+
+.dark .task-card {
+    background: var(--card-background);
+}
+
+.dark .task-card h3,
+.dark .task-info p,
+.dark .task-meta span,
+.dark .task-priority,
+.dark .task-story-points {
+    color: var(--primary-text-color);
+}
+
+.dark .task-meta i {
+    color: var(--primary-color);
+}
+
+.dark .no-tasks-message {
+    color: var(--primary-text-color);
+}
+
+/* Toggle fixes */
+.sun-icon,
+.moon-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.sun-icon {
+    left: 8px;
+    color: #FFB800;
+    opacity: 1;
+}
+
+.moon-icon {
+    right: 8px;
+    color: #695CFE; /* Changed moon color to match primary color */
+    opacity: 0;
+}
+
+/* When toggle is checked (dark mode) */
+input:checked ~ .sun-icon {
+    opacity: 0;
+}
+
+input:checked ~ .moon-icon {
+    opacity: 1;
+    color: #695cfe; /* Moon becomes white when toggle is active */
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+    .sun-icon,
+    .moon-icon {
+        position: absolute;
+        font-size: 20px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    input:checked ~ .moon-icon {
+        opacity: 1;
+    }
+
+    input:checked ~ .sun-icon {
+        opacity: 0;
+    }
+}
+
+/* Analytics Grid Layout */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin: 1.5rem;
+}
+
+/* Chart container styles */
+.chart-wrapper {
+    background: var(--card-background);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    margin: 20px;
+    height: 300px;
+}
+
+.chart-wrapper h3 {
+    margin: 0 0 1rem 0;
+    color: var(--primary-text-color);
+}
+
+.chart-container {
+    flex: 1;
+    position: relative;
+    min-height: 300px;
+}
+
+/* Distribution chart specific */
+#distributionChart {
+    max-width: 100%;
+    height: 100% !important;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-wrapper {
+        height: 350px;
+    }
+}

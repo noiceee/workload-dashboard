@@ -11,6 +11,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <div class="mode-toggle">
+        <label class="toggle-switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+            <i class="fas fa-sun sun-icon"></i>
+            <i class="fas fa-moon moon-icon"></i>
+        </label>
+    </div>
     <div class="app-wrapper">
         <!-- Sidebar -->
         <nav class="sidebar">
@@ -93,9 +101,11 @@
 
             <div class="tab-content" id="analytics">
                 <h2>Analytics</h2>
-                <div class="charts-container">
+                <div class="chart-wrapper">
                     <canvas id="workloadChart"></canvas>
-                    <canvas id="projectDistributionChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="distributionChart"></canvas>
                 </div>
             </div>
 

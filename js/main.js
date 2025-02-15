@@ -17,6 +17,7 @@ class AppManager {
 
         this.setupEventListeners();
         this.setupNavigation();
+        this.setupThemeToggle();
     }
 
     setupNavigation() {
@@ -169,6 +170,33 @@ class AppManager {
     loadInitialData() {
         this.storage.loadFromLocalStorage();
         this.switchTab('dashboard');
+    }
+
+    setupThemeToggle() {
+        const toggle = document.getElementById('theme-toggle');
+        
+        // Check saved theme on load
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark');
+            toggle.checked = true;
+        } else {
+            document.body.classList.remove('dark');
+            toggle.checked = false;
+        }
+        
+        // Handle theme toggle
+        toggle.addEventListener('change', () => {
+            if (toggle.checked) {
+                document.body.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+            
+            // Dispatch theme change event
+            window.dispatchEvent(new CustomEvent('themeChanged'));
+        });
     }
 }
 
