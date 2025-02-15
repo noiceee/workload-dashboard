@@ -1,0 +1,12 @@
+/* Add these styles */
+@media (max-width: 768px) {
+    .charts-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.charts-container canvas {
+    min-height: 300px;
+    width: 100% !important;
+    height: auto !important;
+} 
