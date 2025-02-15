@@ -61,13 +61,21 @@ class TaskManager {
     }
 
     setupEventListeners() {
-        // Ensure form exists before adding listener
+        // Bind the saveTask method to this instance
+        this.boundSaveTask = this.saveTask.bind(this);
+        
         const taskForm = document.getElementById('taskForm');
         if (taskForm) {
-            taskForm.addEventListener('submit', (e) => this.saveTask(e));
+            // Remove any existing listeners
+            taskForm.removeEventListener('submit', this.boundSaveTask);
+            
+            // Add listener using both addEventListener and onsubmit for redundancy
+            taskForm.addEventListener('submit', this.boundSaveTask, true); // Use capturing phase
+            taskForm.onsubmit = this.boundSaveTask;
         }
 
         // Listen for user updates to refresh the form
+        window.removeEventListener('usersUpdated', this.setupTaskForm);
         window.addEventListener('usersUpdated', () => {
             this.setupTaskForm();
             this.renderTasksList();
@@ -75,69 +83,94 @@ class TaskManager {
     }
 
     saveTask(e) {
-        e.preventDefault();
+        // Ensure we prevent default in multiple ways
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+        }
         
-        const taskData = {
-            id: document.getElementById('taskId').value || Date.now().toString(),
-            name: document.getElementById('taskName').value,
-            storyPoints: parseInt(document.getElementById('storyPoints').value),
-            assignedTo: document.getElementById('assignedUser').value,
-            priority: document.getElementById('taskPriority').value
-        };
+        console.log('Form submission prevented');
 
-        // Validate story points
-        if (taskData.storyPoints <= 0) {
-            this.showNotification('Story points must be greater than 0', 'error');
-            return;
+        // Get the form element
+        const form = e?.target;
+        if (!form || form.nodeName !== 'FORM') {
+            console.error('Invalid form element');
+            return false;
         }
 
-        // Check user capacity before saving
-        const assignedUser = this.storage.data.users.find(u => u.id === taskData.assignedTo);
-        if (!assignedUser) {
-            this.showNotification('Please select a valid user', 'error');
-            return;
-        }
+        try {
+            const taskData = {
+                id: document.getElementById('taskId').value || Date.now().toString(),
+                name: document.getElementById('taskName').value,
+                storyPoints: parseInt(document.getElementById('storyPoints').value),
+                assignedTo: document.getElementById('assignedUser').value,
+                priority: document.getElementById('taskPriority').value
+            };
 
-        const existingTask = this.storage.data.tasks.find(t => t.id === taskData.id);
-        const oldStoryPoints = existingTask ? existingTask.storyPoints : 0;
-        const newTotalLoad = assignedUser.currentLoad - oldStoryPoints + taskData.storyPoints;
-
-        if (newTotalLoad > assignedUser.capacity * 1.5) { // Allow overallocation up to 150%
-            if (!confirm(`Warning: This will overallocate ${assignedUser.name}. Proceed anyway?`)) {
-                return;
+            // Validate story points
+            if (taskData.storyPoints <= 0) {
+                this.showNotification('Story points must be greater than 0', 'error');
+                return false;
             }
-        }
 
-        // Update user's current load
-        if (existingTask) {
-            // If task existed and was assigned to someone else, update old user's load
-            if (existingTask.assignedTo !== taskData.assignedTo) {
-                const oldUser = this.storage.data.users.find(u => u.id === existingTask.assignedTo);
-                if (oldUser) {
-                    oldUser.currentLoad -= existingTask.storyPoints;
+            // Check user capacity before saving
+            const assignedUser = this.storage.data.users.find(u => u.id === taskData.assignedTo);
+            if (!assignedUser) {
+                this.showNotification('Please select a valid user', 'error');
+                return false;
+            }
+
+            const existingTask = this.storage.data.tasks.find(t => t.id === taskData.id);
+            const oldStoryPoints = existingTask ? existingTask.storyPoints : 0;
+            const newTotalLoad = assignedUser.currentLoad - oldStoryPoints + taskData.storyPoints;
+
+            if (newTotalLoad > assignedUser.capacity * 1.5) { // Allow overallocation up to 150%
+                if (!confirm(`Warning: This will overallocate ${assignedUser.name}. Proceed anyway?`)) {
+                    return false;
                 }
             }
+
+            // Update user's current load
+            if (existingTask) {
+                // If task existed and was assigned to someone else, update old user's load
+                if (existingTask.assignedTo !== taskData.assignedTo) {
+                    const oldUser = this.storage.data.users.find(u => u.id === existingTask.assignedTo);
+                    if (oldUser) {
+                        oldUser.currentLoad -= existingTask.storyPoints;
+                    }
+                }
+            }
+
+            // Update new user's load
+            assignedUser.currentLoad = newTotalLoad;
+
+            // Save task
+            const taskIndex = this.storage.data.tasks.findIndex(t => t.id === taskData.id);
+            if (taskIndex !== -1) {
+                this.storage.data.tasks[taskIndex] = taskData;
+            } else {
+                this.storage.data.tasks.push(taskData);
+            }
+
+            this.storage.saveToLocalStorage();
+            this.resetForm();
+            this.renderTasksList();
+            this.setupTaskForm(); // Refresh form to update user options
+            this.showNotification('Task saved successfully!', 'success');
+
+            // Trigger dashboard update
+            window.dispatchEvent(new CustomEvent('tasksUpdated'));
+
+            // Reattach event listener after save
+            this.setupEventListeners();
+            
+            return false; // Explicitly return false
+        } catch (error) {
+            console.error('Error saving task:', error);
+            this.showNotification('Error saving task', 'error');
+            return false;
         }
-
-        // Update new user's load
-        assignedUser.currentLoad = newTotalLoad;
-
-        // Save task
-        const taskIndex = this.storage.data.tasks.findIndex(t => t.id === taskData.id);
-        if (taskIndex !== -1) {
-            this.storage.data.tasks[taskIndex] = taskData;
-        } else {
-            this.storage.data.tasks.push(taskData);
-        }
-
-        this.storage.saveToLocalStorage();
-        this.resetForm();
-        this.renderTasksList();
-        this.setupTaskForm(); // Refresh form to update user options
-        this.showNotification('Task saved successfully!', 'success');
-
-        // Trigger dashboard update
-        window.dispatchEvent(new CustomEvent('tasksUpdated'));
     }
 
     resetForm() {
